@@ -1,0 +1,160 @@
+swagger: '2.0'
+info:
+  title: Task Manager API
+  description: API documentation for the full-stack task manager application.
+  version: 1.0.0
+host: localhost:5001
+basePath: /api/v1
+schemes:
+  - http
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Auth
+      parameters:
+        - in: body
+          name: User
+          description: User registration details
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - email
+              - password
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              role:
+                type: string
+                enum: [user, admin]
+      responses:
+        201:
+          description: Created
+  /auth/login:
+    post:
+      summary: Login user
+      tags:
+        - Auth
+      parameters:
+        - in: body
+          name: Credentials
+          description: User credentials
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: OK
+  /tasks:
+    get:
+      summary: Get user tasks (or all if admin)
+      tags:
+        - Tasks
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: List of tasks
+    post:
+      summary: Create a new task
+      tags:
+        - Tasks
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: Task
+          description: Task details
+          required: true
+          schema:
+            type: object
+            required:
+              - title
+              - description
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              status:
+                type: string
+                enum: [pending, in-progress, completed]
+      responses:
+        201:
+          description: Created
+  /tasks/{id}:
+    get:
+      summary: Get single task by ID
+      tags:
+        - Tasks
+      security:
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    put:
+      summary: Update task by ID
+      tags:
+        - Tasks
+      security:
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: TaskUpdate
+          description: Updated task details
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              status:
+                type: string
+      responses:
+        200:
+          description: OK
+    delete:
+      summary: Delete task (User owns it, or Admin)
+      tags:
+        - Tasks
+      security:
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Delete confirmed
